@@ -46,6 +46,14 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
+  def over_time
+    @user = User.find(params[:user_id])
+    @attendance = @user.attendances.find(params[:attendance_id])
+  end
+  
+  def update_over_time
+  end
+  
   private
     
     def attendances_params

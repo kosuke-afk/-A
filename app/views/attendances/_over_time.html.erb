@@ -1,0 +1,34 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title modal-t">残業申請</h1>
+    </div>
+    <div class="modal-body modal-b">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1"> 
+          <%= form_with(model: @attendance, url: user_attendance_update_over_time_path(@user,@attendance), local: true, method: :patch ) do |f| %>
+            <table class="table table-condensed table-hover table-bordered">
+              <tr>
+                <th>日付</th>
+                <th>曜日</th>
+                <th>終了予定時間</th>
+                <th>翌日</th>
+                <th>業務処理内容</th>
+                <th>指示者確認</th>
+              </tr>
+              <tr>
+                <td><%= l(@attendance.worked_on, format: :short) %></td>
+                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                <td><%= f.time_field :finish_time, class: "form-control" %></td>
+                <td></td>
+                <td><%= text_field :aim, class: "form-control" %></td>
+                <td></td>
+              </tr>
+            </table>
+            <%= f.submit "変更", class: "btn btn-block btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
