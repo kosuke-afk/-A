@@ -52,6 +52,15 @@ class AttendancesController < ApplicationController
   end
   
   def update_over_time
+    @user = User.find(params[:user_id])
+    @attendance = @user.attendances.find(params[:attendance_id])
+    if @attendance.update_attributes(params_over_time)
+        flash[:success] = "残業申請を行いました。"
+        redirect_to @user
+    else
+      flash[:danger] = "残業申請に失敗しました。<br>" + @attendance.errors.full_messages.join("<br>")
+      redirect_to @user
+    end
   end
   
   private
@@ -64,4 +73,7 @@ class AttendancesController < ApplicationController
       @user = User.find(params[:user_id])
     end
    
+   def params_over_time
+     params.require(:attendance).permit(:finish_time, :aim, :instructor)
+   end
 end

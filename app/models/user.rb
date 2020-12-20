@@ -9,7 +9,6 @@ class User < ApplicationRecord
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: true
   validates :department, length: { in: 2..30 }, allow_blank: true
-  validates :basic_time, presence: true
   validates :work_time, presence: true
   
   has_secure_password

@@ -4,6 +4,8 @@ User.create(name: "sample-user",
             email: "sample@email.com",
             password: "password",
             password_confirmation: "password",
+            basic_start: "09:00",
+            basic_finish: "17:00",
             admin: true)
             
             
@@ -14,6 +16,8 @@ User.create(name: "sample-user",
   User.create!(name: name,
                email: email,
                password: password,
-               password_confirmation: password)
+               password_confirmation: password,
+               basic_start: "09:00",
+               basic_finish: "17:00")
                
 end

@@ -71,7 +71,7 @@ class UsersController < ApplicationController
     end
     
     def basic_info_params
-      params.require(:user).permit( :base_time, :work_time )
+      params.require(:user).permit(:basic_start,:basic_finish,:work_time)
     end
     
     

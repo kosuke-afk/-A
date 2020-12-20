@@ -10,7 +10,8 @@ ja:
           email: メールアドレス
           department: 所属
           password: パスワード
-          basic_time: 基本勤務時間
+          basic_start: 基本勤務開始時間
+          basic_finish: 基本勤務終了時間
           work_time: 指定勤務時間
           password_confirmation: パスワード再入力
           created_at: 作成日
