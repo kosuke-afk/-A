@@ -49,18 +49,23 @@ class AttendancesController < ApplicationController
   def over_time
     @user = User.find(params[:user_id])
     @attendance = @user.attendances.find(params[:attendance_id])
+    @instructor = User.where(instructor_user: true).where.not(id: @user.id)
   end
   
   def update_over_time
     @user = User.find(params[:user_id])
     @attendance = @user.attendances.find(params[:attendance_id])
-    if @attendance.update_attributes(params_over_time)
-        flash[:success] = "残業申請を行いました。"
+    if params[:attendance][:finish_time].present? && params[:attendance][:aim].present? && params[:attendance][:instructor].present?
+      if @attendance.update_attributes(params_over_time)
+        @attendance.update_attributes(instructor_confirmation: "申請中")
+        flash[:success] = "残業申請を申請しました。"
         redirect_to @user
+      end
     else
-      flash[:danger] = "残業申請に失敗しました。<br>" + @attendance.errors.full_messages.join("<br>")
+      flash[:danger] = "入力の必要な項目が漏れています。"
       redirect_to @user
     end
+    
   end
   
   private
@@ -74,6 +79,6 @@ class AttendancesController < ApplicationController
     end
    
    def params_over_time
-     params.require(:attendance).permit(:finish_time, :aim, :instructor)
+     params.require(:attendance).permit(:finish_time, :next_day, :aim, :instructor)
    end
 end

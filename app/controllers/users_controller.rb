@@ -9,6 +9,7 @@ class UsersController < ApplicationController
   
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
   end
   
   def index
@@ -57,7 +58,6 @@ class UsersController < ApplicationController
       flash[:success] = "#{@user.name}の基本情報を更新しました。"
       redirect_to users_path
     else
-      flash[:danger] = "#{@user.name}の更新に失敗しました。<br>" + @user.errors.full_messages.join("<br>")
       render :edit_basic_info
     end
   end

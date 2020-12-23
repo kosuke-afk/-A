@@ -21,4 +21,7 @@ ja:
           started_at: 出勤時間
           finished_at: 退勤時間
           note: 備考
+          finish_time: 終了時間 
+          aim: 業務処理内容
+          instructor: 指示者確認
           user: ユーザーID

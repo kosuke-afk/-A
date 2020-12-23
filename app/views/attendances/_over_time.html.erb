@@ -27,7 +27,9 @@
                     <% end %>
                   </td>
                   <td><%= a.text_field :aim, class: "form-control" %></td>
-                  <td><%= a.select :instructor, {'上長A':1, '上長B':2}, { include_blank: "選択してください"}, class: "form-control" %></td>
+                  <td>
+                    <%= a.collection_select :instructor, @instructor, :name, :name, { include_blank: "選択してください"}, class: "form-control" %>
+                  </td>
                 </tr>
               <% end %>
             </table>
