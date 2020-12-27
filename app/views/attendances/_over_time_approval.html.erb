@@ -6,7 +6,7 @@
            <h1><%= User.find(id).name %></h1>
            <div class="row">
              <div class="col-md-12">
-               <table class="table table-condensed table-bordered">
+               <table class="table table-condensed table-bordered table-user">
                  <thead>
                    <tr>
                      <th>日付</th>
@@ -26,8 +26,8 @@
                        <tr>
                          <td><%= l(day.worked_on, format: :short) %></td>
                          <td class="text-<%= wday_class(day) %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
-                         <td></td>
-                         <td></td>
+                         <td class="table-text"><%= l(day.finish_time,format: :time) %></td>
+                         <td class="table-text"><%= l(User.find(id).basic_finish, format: :time) %></td>
                          <td></td>
                          <td></td>
                          <td class="botton dropdown"><%= a.select :instructor_confirmation, ['申請中', '否認', '承認', 'なし'],{include_blank: true}, class: "form-control" %></td>
@@ -36,7 +36,7 @@
                              <%= a.check_box :change %>
                            <% end %>
                          </td>
-                         <td><%= link_to "確認", user_path(@user), class: "btn btn-primary btn-approval" %></td>
+                         <td><%= link_to "確認", user_path(User.find(id)), class: "btn btn-primary btn-approval" %></td>
                        </tr>
                      </tbody>
                    <% end %>

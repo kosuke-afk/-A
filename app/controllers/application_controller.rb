@@ -33,6 +33,13 @@ class ApplicationController < ActionController::Base
    def correct_user
      redirect_to root_url unless current_user?(@user)
    end
+   
+   def instructor_user_or_correct_user
+     unless current_user.instructor_user? || current_user?(@user)
+       flash[:danger] = "権限がありません。"
+       redirect_to root_url
+     end
+   end
   
   
   
@@ -56,5 +63,5 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
       
-    
+  
 end

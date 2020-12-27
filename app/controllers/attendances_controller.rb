@@ -76,7 +76,6 @@ class AttendancesController < ApplicationController
     #                       .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
     @over_time_attendances = Attendance.where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
                                        .order(:user_id).group_by(&:user_id)
-    @attendance = Attendance.new
   end
   
   def update_over_time_approval
