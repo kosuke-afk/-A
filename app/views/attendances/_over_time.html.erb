@@ -14,15 +14,15 @@
                 <th>終了予定時間</th>
                 <th>翌日</th>
                 <th>業務処理内容</th>
-                <th>指示者確認</th>
+                <th>指示者確認㊞</th>
               </tr>
               <%= fields_for @attendance do |a|%>
                 <tr>
                   <td><%= l(@attendance.worked_on, format: :short) %></td>
-                  <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                  <td class="text-<%= wday_class(@attendance) %>"><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
                   <td><%= a.time_field :finish_time, class: "form-control" %></td>
                   <td>
-                    <%= a.label :next_day, class: "checkbox checkbox-next-day" do %>
+                    <%= a.label :next_day, class: "checkbox checkbox-position" do %>
                       <%= a.check_box :next_day %>
                     <% end %>
                   </td>
@@ -33,7 +33,7 @@
                 </tr>
               <% end %>
             </table>
-            <%= f.submit "変更", class: "btn btn-block btn-primary" %>
+            <%= f.submit "変更", class: "btn btn-basic-info btn-primary" %>
           <% end %>
         </div>
       </div>

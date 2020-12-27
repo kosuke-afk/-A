@@ -62,10 +62,53 @@ class AttendancesController < ApplicationController
         redirect_to @user
       end
     else
-      flash[:danger] = "入力の必要な項目が漏れています。"
+      flash[:danger] = "申請に必要な項目が漏れています。"
       redirect_to @user
     end
-    
+  end
+  
+  def over_time_approval
+    @user = User.find(params[:id])
+    # @over_time_users = User.joins(:attendances)
+    #                       .select('users.*, attendances.*')
+    #                       .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
+    @over_time_attendances = Attendance.where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
+                                       .order(:user_id).group_by(&:user_id)
+    @attendance = Attendance.new
+  end
+  
+  def update_over_time_approval
+   @user = User.find(params[:id])
+   ActiveRecord::Base.transaction do
+     n1 = 0 
+     n2 = 0
+     n3 = 0
+     params_approval.each do |id, item|
+       if (item[:change] == "1") && (item[:instructor_confirmation] != "申請中")
+         @attendance = Attendance.find(id)
+         if item[:instructor_confirmation] = "承認"
+           n1 = n1 + 1 # n1 += 1, n1 ++
+         elsif item[:instructor_confirmation] = "否認"
+           n2 = n2 + 1
+         elsif item[:instructor_confirmation] = "なし"
+           n3 = n3 + 1
+           item[:change] = "0"
+           item[:instructor_confirmation] = nil
+           item[:instructor] = nil
+         end
+         @attendance.update_attributes!(item)
+       end
+     end
+     if (n1 == 0) && (n2 == 0) && (n3 == 0)
+       flash[:info] = "変更するにはテェックを入れてください。"
+     else
+       flash[:success] = "残業申請を#{n1}件承認、#{n2}件否認、#{n3}件なしに変更しました。"
+     end
+     redirect_to @user
+   rescue ActiveRecord::RecordInvald
+     flash[:danger] = "残業申請の変更をやり直してください。"
+     redirect_to @user
+   end
   end
   
   private
@@ -80,5 +123,9 @@ class AttendancesController < ApplicationController
    
    def params_over_time
      params.require(:attendance).permit(:finish_time, :next_day, :aim, :instructor)
+   end
+   
+   def params_approval
+     params.require(:user).permit(attendances: [ :instructor_confirmation,:change,:instructor])[:attendances]
    end
 end

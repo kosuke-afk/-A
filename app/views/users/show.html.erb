@@ -25,13 +25,13 @@
     </tr>
   </table>
   
-    <ul>
+    <ul class="list-unstyled">
       <% if @user.instructor_user? %>
           <li>【所属長承認申請のお知らせ】</li>
           <li>【勤怠変更申請のお知らせ】</li>
         <% if @over_time.present? %>
           <li class="text-danger">
-            <%= link_to "【残業申請のお知らせ】", '#', class: "text-danger" %>
+            <%= link_to "【残業申請のお知らせ】",attendances_over_time_approval_user_path(@user), remote: true, class: "text-danger" %>
             <span><%= @over_time.count %>件の通知があります。</span>
           </li>
         <% else %>
@@ -61,7 +61,7 @@
         <th colspan="2">終了予定時間</th>
         <th rowspan="2">時間外時間</th>
         <th rowspan="2">勤務処理内容</th>
-        <th rowspan="2">指示書確認</th>
+        <th rowspan="2">指示書確認㊞</th>
       </tr>
       <tr>
         <th>時</th>
@@ -99,7 +99,11 @@
           <td><%= day.note %></td>
           <td></td>
           <td></td>
-          <td><%= working_over_time(day,day.finish_time,@user.basic_finish) %></td>
+          <td>
+            <% if day.instructor_confirmation == "承認" %>
+              <%= working_over_time(day,day.finish_time,@user.basic_finish) %>
+            <% end %>
+          </td>
           <td></td>
           <td><%= day.instructor_confirmation %></td>
         </tr>
@@ -117,3 +121,4 @@
 </div>
 
 <div id="over-time" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="over-time-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

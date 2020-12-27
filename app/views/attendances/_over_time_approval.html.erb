@@ -1,0 +1,52 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-body modal-b">
+      <%= form_with(model: @user, url: attendances_update_over_time_approval_user_path(@user), local: true, method: :patch) do |f| %>
+         <% @over_time_attendances.each do |id, attendances| %>
+           <h1><%= User.find(id).name %></h1>
+           <div class="row">
+             <div class="col-md-12">
+               <table class="table table-condensed table-bordered">
+                 <thead>
+                   <tr>
+                     <th>日付</th>
+                     <th>曜日</th>
+                     <th>終了予定時間</th>
+                     <th>指定勤務終了時間</th>
+                     <th>時間外時間</th>
+                     <th>業務処理内容</th>
+                     <th>指示者確認㊞</th>
+                     <th>変更</th>
+                     <th>勤怠を変更する</th>
+                   </tr>
+                 </thead>
+                 <% attendances.each do |day| %>
+                   <%= f.fields_for "attendances[]", day do |a| %>
+                     <tbody>
+                       <tr>
+                         <td><%= l(day.worked_on, format: :short) %></td>
+                         <td class="text-<%= wday_class(day) %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
+                         <td></td>
+                         <td></td>
+                         <td></td>
+                         <td></td>
+                         <td class="botton dropdown"><%= a.select :instructor_confirmation, ['申請中', '否認', '承認', 'なし'],{include_blank: true}, class: "form-control" %></td>
+                         <td>
+                           <%= a.label :change, class: "checkbox checkbox-position" do %>
+                             <%= a.check_box :change %>
+                           <% end %>
+                         </td>
+                         <td><%= link_to "確認", user_path(@user), class: "btn btn-primary btn-approval" %></td>
+                       </tr>
+                     </tbody>
+                   <% end %>
+                 <% end %>
+               </table>
+             </div>
+           </div>
+         <% end %>
+         <%= f.submit "変更", class: "btn btn-basic-info btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
