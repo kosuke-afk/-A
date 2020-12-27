@@ -1,10 +1,13 @@
 class AttendancesController < ApplicationController
   
-  before_action :set_user, only: [:edit_one_month,:update_one_month]
-  before_action :set_userid, only: :update
-  before_action :log_in_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :set_user, only: [:edit_one_month,:update_one_month, :over_time_approval, :update_over_time_approval]
+  before_action :set_userid, only: [:update]
+  before_action :set_user_id_attendance_id, only: [:over_time, :update_over_time]
+  before_action :log_in_user, only: [:update, :edit_one_month, :update_one_month, :over_time, :update_over_time, :over_time_approval,
+                                     :update_over_time_approval]
   before_action :set_one_month, only: [:edit_one_month, :update_one_month]
   before_action :admin_or_correct_user, only: [:update,:edit_one_month, :update_one_month]
+  before_action :correct_user, only: [:over_time,:update_over_time, :over_time_approval, :update_over_time_approval]
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
   def update
@@ -47,7 +50,6 @@ class AttendancesController < ApplicationController
   end
   
   def over_time
-    @user = User.find(params[:user_id])
     @attendance = @user.attendances.find(params[:attendance_id])
     @instructor = User.where(instructor_user: true).where.not(id: @user.id)
   end
@@ -86,11 +88,11 @@ class AttendancesController < ApplicationController
      params_approval.each do |id, item|
        if (item[:change] == "1") && (item[:instructor_confirmation] != "申請中")
          @attendance = Attendance.find(id)
-         if item[:instructor_confirmation] = "承認"
+         if item[:instructor_confirmation] == "承認"
            n1 = n1 + 1 # n1 += 1, n1 ++
-         elsif item[:instructor_confirmation] = "否認"
+         elsif item[:instructor_confirmation] == "否認"
            n2 = n2 + 1
-         elsif item[:instructor_confirmation] = "なし"
+         elsif item[:instructor_confirmation] == "なし"
            n3 = n3 + 1
            item[:change] = "0"
            item[:instructor_confirmation] = nil
@@ -120,12 +122,18 @@ class AttendancesController < ApplicationController
     def set_userid
       @user = User.find(params[:user_id])
     end
+    
+    def set_user_id_attendance_id
+      @user = User.find(params[:user_id])
+      @attendance = @user.attendances.find(params[:attendance_id])
+    end
    
-   def params_over_time
-     params.require(:attendance).permit(:finish_time, :next_day, :aim, :instructor)
-   end
-   
-   def params_approval
-     params.require(:user).permit(attendances: [ :instructor_confirmation,:change,:instructor])[:attendances]
-   end
+    def params_over_time
+      params.require(:attendance).permit(:finish_time, :next_day, :aim, :instructor)
+    end
+     
+     
+    def params_approval
+      params.require(:user).permit(attendances: [ :instructor_confirmation,:change,:instructor])[:attendances]
+    end
 end
