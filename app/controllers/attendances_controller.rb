@@ -29,6 +29,7 @@ class AttendancesController < ApplicationController
   end
   
   def edit_one_month
+    @instructor = User.where(instructor_user: true).where.not(name: @user.name)
   end
   
   def update_one_month
@@ -115,7 +116,7 @@ class AttendancesController < ApplicationController
   private
     
     def attendances_params
-      params.require(:user).permit(attendances: [ :started_at, :finished_at, :note])[:attendances]
+      params.require(:user).permit(attendances: [ :started_at_temporary, :finished_at_temporary, :note])[:attendances]
     end
     
     def set_userid
