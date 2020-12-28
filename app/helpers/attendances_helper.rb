@@ -20,4 +20,12 @@ module AttendancesHelper
       format("%.2f", (((finish - basic   ) / 60) / 60.0))
     end
   end
+  
+  def attendance_value_started(attendance)
+    return "#{attendance.started_at.floor_to(15.minutes).strftime("%H:%M")}" if attendance.started_at.present?
+  end
+  
+  def attendance_value_finished(attendance)
+    return "#{attendance.finished_at.floor_to(15.minutes).strftime("%H:%M")}" if attendance.finished_at.present?
+  end
 end

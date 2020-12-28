@@ -25,8 +25,8 @@
                 <td><%= attendance.time_field :started_at_temporary, readonly: true, class: "form-control" %></td>
                 <td><%= attendance.time_field :finished_at_temporary, readonly: true, class: "form-control" %></td>
               <% else %>
-                <td><%= attendance.time_field :started_at_temporary, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at_temporary, class: "form-control" %></td>
+                <td><%= attendance.time_field :started_at_temporary, value: attendance_value_started(day), class: "form-control" %></td>
+                <td><%= attendance.time_field :finished_at_temporary, value: attendance_value_finished(day), class: "form-control" %></td>
               <% end %>
               <td>
                 <%= attendance.label :next_day, class: "check_box" do %>

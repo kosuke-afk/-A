@@ -34,20 +34,33 @@ class AttendancesController < ApplicationController
   
   def update_one_month
     ActiveRecord::Base.transaction do
+      n1 = 0
       attendances_params.each do |id, item|
-        if item[:started_at].present? && item[:finished_at].blank?
+        if item[:started_at_temporary].present? && item[:finished_at_temporary].blank?
           flash[:danger] = "退社時間が必要です。"
           redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
         end
         attendance = Attendance.find(id)
-        attendance.update_attributes!(item)
+        if (attendance.started_at.present?) && (attendance.finished_at.present?)
+          unless (attendance.started_at == item[:started_at_temporary]) &&
+             (attendance.finished_at == item[:finished_at_temporary])
+            if attendance.update_attributes!(item)
+              n1 = n1 + 1 
+              attendance.update_attributes(attendance_confirmation: "申請中")
+            end
+          end
+        end
       end
+      if n1 == 0
+        flash[:info] = "更新するデータがありません。"
+      else
+        flash[:success] = "#{n1}件のデータを更新しました。"
+      end
+      redirect_to user_url(date: params[:date])
+    rescue ActiveRecord::RecordInvalid
+      flash[:danger] = "無効な入力データがあったため、更新をキャンセルしました。"
+      redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
     end
-    flash[:success] = "一ヶ月分のデータを更新しました。"
-    redirect_to user_url(date: params[:date])
-  rescue ActiveRecord::RecordInvalid
-    flash[:danger] = "無効な入力データがあったため、更新をキャンセルしました。"
-    redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
   def over_time
@@ -116,7 +129,9 @@ class AttendancesController < ApplicationController
   private
     
     def attendances_params
-      params.require(:user).permit(attendances: [ :started_at_temporary, :finished_at_temporary, :note])[:attendances]
+      params.require(:user)
+            .permit(attendances: [ :started_at_temporary, :finished_at_temporary, :attendance_instructor, 
+                                   :attendance_confirmation, :note])[:attendances]
     end
     
     def set_userid
