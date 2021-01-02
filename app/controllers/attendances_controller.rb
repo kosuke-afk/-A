@@ -1,13 +1,15 @@
 class AttendancesController < ApplicationController
   
-  before_action :set_user, only: [:edit_one_month,:update_one_month, :over_time_approval, :update_over_time_approval]
+  before_action :set_user, only: [:edit_one_month,:update_one_month, :over_time_approval, :update_over_time_approval, :attendance_approval, :update_attendance_approval]
   before_action :set_userid, only: [:update]
   before_action :set_user_id_attendance_id, only: [:over_time, :update_over_time]
   before_action :log_in_user, only: [:update, :edit_one_month, :update_one_month, :over_time, :update_over_time, :over_time_approval,
-                                     :update_over_time_approval]
+                                     :update_over_time_approval, :attendance_approval, :update_attendance_approval]
   before_action :set_one_month, only: [:edit_one_month, :update_one_month]
   before_action :admin_or_correct_user, only: [:update,:edit_one_month, :update_one_month]
-  before_action :correct_user, only: [:over_time,:update_over_time, :over_time_approval, :update_over_time_approval]
+  before_action :correct_user, only: [:over_time,:update_over_time, :over_time_approval, :update_over_time_approval, :attendance_approval,
+                                      :update_attendance_approval]
+  
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
   def update
@@ -36,27 +38,24 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do
       n1 = 0
       attendances_params.each do |id, item|
-        if item[:started_at_temporary].present? && item[:finished_at_temporary].blank?
-          flash[:danger] = "退社時間が必要です。"
-          redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-        end
         attendance = Attendance.find(id)
-        if (attendance.started_at.present?) && (attendance.finished_at.present?)
-          unless (attendance.started_at == item[:started_at_temporary]) &&
-             (attendance.finished_at == item[:finished_at_temporary])
-            if attendance.update_attributes!(item)
-              n1 = n1 + 1 
-              attendance.update_attributes(attendance_confirmation: "申請中")
-            end
+        if (item[:attendance_instructor].present?) || (item[:started_at_temporary].present?) || (item[:finished_at_temporary].present?)
+          if (item[:attendance_instructor].blank?) || (item[:started_at_temporary].blank?) || (item[:finished_at_temporary].blank?)
+            flash[:info] = "出勤時間、退勤時間、申請先の上長を入力してください。"
+            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+          else
+            attendance.update_attributes!(item)
+            attendance.update_attributes(attendance_confirmation: "申請中")
+            n1 += 1
           end
         end
       end
       if n1 == 0
-        flash[:info] = "更新するデータがありません。"
-      else
-        flash[:success] = "#{n1}件のデータを更新しました。"
+        flash[:info] = "更新するデータがありません"
+      elsif n1 >= 1
+        flash[:info] = "#{n1}件の勤怠編集を申請しました。"
       end
-      redirect_to user_url(date: params[:date])
+      redirect_to user_url(date: params[:date]) and return
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "無効な入力データがあったため、更新をキャンセルしました。"
       redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
@@ -98,7 +97,7 @@ class AttendancesController < ApplicationController
      n1 = 0 
      n2 = 0
      n3 = 0
-     params_approval.each do |id, item|
+     params_over_time_approval.each do |id, item|
        if (item[:change] == "1") && (item[:instructor_confirmation] != "申請中")
          @attendance = Attendance.find(id)
          if item[:instructor_confirmation] == "承認"
@@ -126,6 +125,63 @@ class AttendancesController < ApplicationController
    end
   end
   
+  def attendance_approval
+    @attendances = Attendance.where(attendance_confirmation: "申請中", attendance_instructor: @user.name)
+                             .group_by(&:user_id)
+  end
+  
+  def update_attendance_approval
+    ActiveRecord::Base.transaction do
+      n1 = 0
+      n2 = 0
+      n3 = 0
+      n4 = 0
+      params_attendance_approval.each do |id, item|
+        if (item[:attendance_change] == "1" )
+          if (item[:attendance_confirmation] != "")
+            @attendance = Attendance.find(id)
+            if item[:attendance_confirmation] == "承認"
+              n1 += 1
+              item[:started_at] = @attendance.started_at_temporary
+              item[:finished_at] = @attendance.finished_at_temporary
+              item[:attendance_change] = nil
+              item[:started_at_temporary] = nil
+              item[:finished_at_temporary] = nil
+            elsif item[:attendance_confirmation] == "否認"
+              n2 += 1
+              item[:started_at_temporary] = nil
+              item[:finished_at_temporary] = nil
+              item[:attendance_change] = nil
+            elsif item[:attendance_confirmation] == "なし"
+              n3 += 1
+              item[:attendance_confirmation] = nil
+              item[:attendance_change] = nil
+              item[:attendance_instructor] = nil
+              item[:started_at_temporary] = nil
+              item[:finished_at_temporary] = nil
+            end
+            @attendance.update_attributes!(item)
+          else
+            n4 += 1
+          end
+        else
+          n4 += 1
+        end
+      end
+      if (n4 >= 1) && ((n1 >= 1) || (n2 >= 1) || (n3 >= 1))
+        flash[:info] = "変更にテェックを入れて、承認、否認、なしを選択してください。#{n1}件の承認、#{n2}件の否認、#{n3}件のなしに変更しました。"
+      elsif (n1 >= 1) || (n2 >= 1) || (n3 >= 1)
+        flash[:info] = "#{n1}件の承認、#{n2}件の否認、#{n3}件のなしに変更しました。"
+      elsif (n4 >= 1)
+        flash[:info] = "変更にテェックを入れて、承認、否認、なしを選択してください。"
+      end
+      redirect_to user_url(@user)
+    rescue ActiveRecord::RecordInvalid
+      flash[:danger] = "勤怠申請の変更をやり直してください"
+      redirect_to @user
+    end
+  end
+  
   private
     
     def attendances_params
@@ -148,7 +204,12 @@ class AttendancesController < ApplicationController
     end
      
      
-    def params_approval
+    def params_over_time_approval
       params.require(:user).permit(attendances: [ :instructor_confirmation,:change,:instructor])[:attendances]
+    end
+    
+    def params_attendance_approval
+      params.require(:user).permit(attendances: [:attendance_confirmation, :attendance_instructor, :attendance_change,:started_at, :finished_at,
+                                                 :started_at_temporary, :finished_at_temporary])[:attendances]
     end
 end

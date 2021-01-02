@@ -1,5 +1,5 @@
 module AttendancesHelper
-  
+  $confirmation = %w{ 承認 否認 なし}
   def attendance_state(attendance)
     if Date.current == attendance.worked_on
       return "出勤" if attendance.started_at.nil?
@@ -28,4 +28,8 @@ module AttendancesHelper
   def attendance_value_finished(attendance)
     return "#{attendance.finished_at.floor_to(15.minutes).strftime("%H:%M")}" if attendance.finished_at.present?
   end
+  
+  
+ 
+  
 end

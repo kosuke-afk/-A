@@ -11,6 +11,7 @@ class UsersController < ApplicationController
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
     @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
+    @attendance_edit = User.joins(:attendances).where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
   end
   
   def index

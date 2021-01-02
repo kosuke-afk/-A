@@ -1,0 +1,70 @@
+<div class="modal-dialog modal-lg modal-dialog-centerr">
+  <div class="modal-content">
+    <div class="modal-body modal-b">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <%= form_with(model: @user, url: attendances_update_attendance_approval_user_path(@user), local: true, method: :patch) do |f| %>
+            <% @attendances.each do |id,item| %>
+              <h1>【<%= User.find(id).name %>からの勤怠変更申請】</h1>
+              <table class="table table-bordered table-condensed table-hover">
+                <thead>
+                  <tr>
+                    <th rowspan="3">日付</th>
+                    <th rowspan="3">曜日</th>
+                    <th colspan="4">変更前</th>
+                    <th colspan="4">変更後</th>
+                    <th rowspan="3">備考</th>
+                    <th rowspan="3">指示者確認</th>
+                    <th rowspan="3">変更</th>
+                    <th rowspan="3">勤怠を確認する</th>
+                  </tr>
+                  <tr>
+                    <th colspan="2">出社</th>
+                    <th colspan="2">退社</th>
+                    <th colspan="2">出社</th>
+                    <th colspan="2">退社</th>
+                  </tr>
+                  <tr>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                    <th>時</th>
+                    <th>分</th>
+                  </tr>
+                </thead>
+                <% item.each do |day| %>
+                  <%= f.fields_for "attendances[]", day do |a| %>
+                    <tbody>
+                      <td><%= l(day.worked_on, format: :short) %></td>
+                      <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                      <td><%= l(day.started_at, format: :hour) if day.started_at.present? %></td>
+                      <td><%= l(day.started_at.floor_to(15.minutes), format: :min) if day.started_at.present? %></td>
+                      <td><%= l(day.finished_at, format: :hour) if day.finished_at.present? %></td>
+                      <td><%= l(day.finished_at.floor_to(15.minutes), format: :min) if day.finished_at.present? %></td>
+                      <td><%= l(day.started_at_temporary, format: :hour) if day.started_at_temporary.present? %></td>
+                      <td><%= l(day.started_at_temporary.floor_to(15.minutes), format: :min) if day.started_at_temporary.present? %></td>
+                      <td><%= l(day.finished_at_temporary, format: :hour) if day.finished_at_temporary.present? %></td>
+                      <td><%= l(day.finished_at_temporary.floor_to(15.minutes), format: :min) if day.finished_at_temporary.present? %></td>
+                      <td><%= day.note %></td>
+                      <td><%= a.select :attendance_confirmation, options_for_select($confirmation.each{|c| c}), {include_blank: "選択してください"}, class: "form-control" %></td>
+                      <td>
+                        <%= a.label :attendance_change, class: "checkbox checkbox-position" do %>
+                          <%= a.check_box :attendance_change %>
+                        <% end %>
+                      </td>
+                      <td><%= link_to "確認", user_path(id), class: "btn btn-primary btn-approval" %></td>
+                    </tbody>
+                  <% end %>
+                <% end %>
+              </table>
+            <% end %>
+            <%= f.submit "変更を送信する", class: "btn btn-lg btn-primary btn-basic-info" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
