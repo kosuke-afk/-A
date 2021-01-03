@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  require 'csv'
   
   before_action :set_user, only: [ :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :log_in_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
@@ -11,7 +12,14 @@ class UsersController < ApplicationController
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
     @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
-    @attendance_edit = User.joins(:attendances).where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
+    @attendance_edit = User.joins(:attendances)
+                           .where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
+    respond_to do |format|
+      format.html
+      format.csv do |csv|
+        send_attendances_csv(@attendances)
+      end
+    end
   end
   
   def index
@@ -84,6 +92,29 @@ class UsersController < ApplicationController
       end
     end
     
+    def send_attendances_csv(attendances)
+      csv_data = CSV.generate do |csv|
+        column_names = %w(日付 曜日 出社 退社)
+        csv << column_names
+        attendances.each do |attendance|
+          if attendance.started_at.present? && attendance.finished_at.present?
+            column_values = [
+              attendance.worked_on,
+              $days_of_the_week[attendance.worked_on.wday],
+              l(attendance.started_at, format: :time), 
+              l(attendance.finished_at, format: :time)
+            ]
+          else 
+            column_values = [
+               attendance.worked_on,
+               $days_of_the_week[attendance.worked_on.wday]
+               ]
+          end
+          csv << column_values
+        end
+      end
+      send_data(csv_data, filename: "勤怠情報.csv")
+    end
     
   
   

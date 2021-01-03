@@ -50,7 +50,9 @@
       </ul>
     
     <div class="btn-users-show">
-      <%= link_to "一ヶ月の勤怠編集へ", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-info" %>
+      <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
+      <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %>
+      <%= link_to "勤怠修正ログ (承認済み）", class: "btn btn-primary" %>
     </div>
     
     <table class="table table-bordered table-condensed table-hover" id="table-attendances">
