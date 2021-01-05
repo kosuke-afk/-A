@@ -12,13 +12,12 @@
     <table class="table table-condensed ">
       <tbody>
         <% @users.each do |user| %>
-          <tr>
-            <td ><%= link_to user.name, user_path(user) %></td>
-            <td class="text-right"><%= link_to "基本情報編集", edit_basic_info_user_path(user), class: "btn btn-success" %>
-                <%= link_to "削除", user, method: :delete, 
-                class: "btn btn-danger", data: { confirm: "削除してよろしいですか？"} %>
-            </td>
-          </tr>
+          <div>
+            <p><%= user.name %></p>
+            <%= link_to "削除", user_path(user), method: :delete, class: "btn btn-primary" %>
+            <div class="users-list acdb-button"><%= link_to "編集", '#', class: "btn btn-primary btn-lg btn-edit", id: "acdb-button" %></div>
+            <p id="acdb-content">ありがとう</p>
+          </div>
         <% end %>
       </tbody>
     </table>

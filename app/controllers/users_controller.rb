@@ -23,6 +23,7 @@ class UsersController < ApplicationController
   end
   
   def index
+    @user = User.new
     @users = User.paginate(page: params[:page]).search(params[:search])
   end
   
@@ -99,14 +100,14 @@ class UsersController < ApplicationController
         attendances.each do |attendance|
           if attendance.started_at.present? && attendance.finished_at.present?
             column_values = [
-              attendance.worked_on,
+              l(attendance.worked_on, format: :short),
               $days_of_the_week[attendance.worked_on.wday],
               l(attendance.started_at, format: :time), 
               l(attendance.finished_at, format: :time)
             ]
           else 
             column_values = [
-               attendance.worked_on,
+               l(attendance.worked_on, format: :short),
                $days_of_the_week[attendance.worked_on.wday]
                ]
           end
