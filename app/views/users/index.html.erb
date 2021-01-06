@@ -1,4 +1,5 @@
 <% provide(:title, "ユーザー一覧ページ") %>
+<% provide(:button, "編集") %>
 <h1>ユーザー一覧</h1>
 <div class="text-right">
   <%= form_tag(users_path,method: :get) do %>
@@ -11,12 +12,50 @@
     <%= will_paginate %>
     <table class="table table-condensed ">
       <tbody>
-        <% @users.each do |user| %>
+        <% @users.each.with_index(1) do |user, i| %>
           <div>
             <p><%= user.name %></p>
             <%= link_to "削除", user_path(user), method: :delete, class: "btn btn-primary" %>
-            <div class="users-list acdb-button"><%= link_to "編集", '#', class: "btn btn-primary btn-lg btn-edit", id: "acdb-button" %></div>
-            <p id="acdb-content">ありがとう</p>
+            <div class="users-list">
+              <a class="btn btn-primary btn-lg btn-edit" data-toggle="collapse"  href="#collapseExample<%= "#{i}" %>" role="button" aria-expanded="false" aria-controls="collapseExample<%= "#{i}" %>">
+                編集
+              </a>
+            </div>
+            <div class="row collapse" id="collapseExample<%= "#{i}" %>">
+              <div class="col-md-10">
+                <%= form_with(model: user, url: user_path(user), local: true, method: :patch) do |f| %>
+                   <% if user.errors.any? %>
+                      <div class="error-explanation">
+                        <div class="alert alert-danger">
+                          入力エラーが <%= user.errors.count %>件ありました。
+                        </div>
+                        <ul>
+                          <% user.errors.full_messages.each do |msg| %>
+                            <li><%= msg %></li>
+                          <% end %>
+                        </ul>
+                      </div>
+                    <% end %>
+                    
+                   <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                   <%= f.text_field :name, class: "form-control" %>
+                      
+                   <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+                   <%= f.email_field :email, class: "form-control" %>
+                   
+                   <%= f.label :department, class: "label-#{yield(:class_text)}" %>
+                   <%= f.text_field :department, class: "form-control" %>
+                      
+                   <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+                   <%= f.password_field :password, class: "form-control" %>
+                      
+                   <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
+                   <%= f.password_field :password_confirmation, class: "form-control" %>
+                      
+                   <%= f.submit yield(:button), class: "btn btn-block btn-primary btn-signup" %>
+                <% end %>
+              </div>
+            </div>
           </div>
         <% end %>
       </tbody>
