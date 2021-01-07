@@ -24,18 +24,6 @@
             <div class="row collapse" id="collapseExample<%= "#{i}" %>">
               <div class="col-md-10">
                 <%= form_with(model: user, url: user_path(user), local: true, method: :patch) do |f| %>
-                   <% if user.errors.any? %>
-                      <div class="error-explanation">
-                        <div class="alert alert-danger">
-                          入力エラーが <%= user.errors.count %>件ありました。
-                        </div>
-                        <ul>
-                          <% user.errors.full_messages.each do |msg| %>
-                            <li><%= msg %></li>
-                          <% end %>
-                        </ul>
-                      </div>
-                    <% end %>
                     
                    <%= f.label :name, class: "label-#{yield(:class_text)}" %>
                    <%= f.text_field :name, class: "form-control" %>

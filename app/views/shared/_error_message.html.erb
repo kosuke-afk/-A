@@ -1,10 +1,10 @@
-<% if obg.errors.any? %>
+<% if @user.errors.any? %>
   <div class="error-explanation">
     <div class="alert alert-danger">
-      入力エラーが <%= obg.errors.count %>件ありました。
+      入力エラーが <%= @user.errors.count %>件ありました。
     </div>
     <ul>
-      <% obg.errors.full_messages.each do |msg| %>
+      <% @user.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
       <% end %>
     </ul>
