@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :log_in_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :admin_or_correct_user, only: [ :edit, :update]
   before_action :instructor_user_or_correct_user, only: :show
-  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :admin_user, only: [ :index, :destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: :show
   
   
@@ -23,8 +23,20 @@ class UsersController < ApplicationController
   end
   
   def index
-    @user = User.new
-    @users = User.paginate(page: params[:page]).search(params[:search])
+    @user = User.find(2)
+    @users = User.all
+  end
+  
+  def edit
+  end
+  
+  def update
+    if @user.update_attributes(params_user)
+      flash[:success] = "ユーザー情報を更新しました。"
+      redirect_to users_path
+    else
+      render :edit
+    end
   end
   
   def new
@@ -42,17 +54,7 @@ class UsersController < ApplicationController
     end
   end
   
-  def edit
-  end
   
-  def update
-    if @user.update_attributes(params_user)
-      flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to users_url
-    else
-      render :edit
-    end
-  end
   
   def destroy
     @user.destroy
@@ -86,7 +88,7 @@ class UsersController < ApplicationController
     
     
     def admin_or_correct_user
-      unless current_user.admin? || current_user?(@user)
+      unless (current_user.admin?) || (current_user?(@user))
         flash[:danger] = "権限がありません。"
         redirect_to root_url
       end
