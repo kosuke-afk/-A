@@ -7,46 +7,46 @@
     <table class="table ">
       <tbody>
         <% @users.each.with_index(1) do |user, item| %>
-          <tr>
-           <td><%= user.name %></td> 
-          </tr>
-          <tr>
-            <td><%= link_to "削除", user, method: :delete, 
-                class: "btn btn-primary", data: { confirm: "削除してよろしいですか？"} %>
-            </td>
-          </tr>
-          <tr>
-            <td class="btn-edit">
-              <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample<%= "#{item}" %>">編集</a>
-            </td>
-          </tr>
-          <tr class="collapse" id="collapseExample<%= "#{item}" %>">
-            <td>
-              <div class="row">
-                <div class="col-md-10">
-                  <%= form_with(model: user, url: user_path(user), local: true, method: :patch) do |f| %>
-                
-                     <%= f.label :name, class: "label-#{yield(:class_text)}" %>
-                     <%= f.text_field :name, class: "form-control" %>
-                        
-                     <%= f.label :email, class: "label-#{yield(:class_text)}" %>
-                     <%= f.email_field :email, class: "form-control" %>
-                     
-                     <%= f.label :department, class: "label-#{yield(:class_text)}" %>
-                     <%= f.text_field :department, class: "form-control" %>
-                        
-                     <%= f.label :password, class: "label-#{yield(:class_text)}" %>
-                     <%= f.password_field :password, class: "form-control" %>
-                        
-                     <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
-                     <%= f.password_field :password_confirmation, class: "form-control" %>
-                        
-                     <%= f.submit yield(:button), class: "btn btn-block btn-primary btn-signup" %>
-                  <% end %>
+            <tr>
+             <td><%= user.name %></td> 
+            </tr>
+            <tr>
+              <td><%= link_to "削除", user, method: :delete, 
+                  class: "btn btn-primary", data: { confirm: "削除してよろしいですか？"} %>
+              </td>
+            </tr>
+            <tr>
+              <td class="btn-edit">
+                <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample<%= "#{item}" %>">編集</a>
+              </td>
+            </tr>
+            <tr class="collapse" id="collapseExample<%= "#{item}" %>">
+              <td>
+                <div class="row">
+                  <div class="col-md-10">
+                    <%= form_with(model: user, url: user_path(user), local: true, method: :patch) do |f| %>
+                  
+                       <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                       <%= f.text_field :name, class: "form-control" %>
+                          
+                       <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+                       <%= f.email_field :email, class: "form-control" %>
+                       
+                       <%= f.label :department, class: "label-#{yield(:class_text)}" %>
+                       <%= f.text_field :department, class: "form-control" %>
+                          
+                       <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+                       <%= f.password_field :password, class: "form-control" %>
+                          
+                       <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
+                       <%= f.password_field :password_confirmation, class: "form-control" %>
+                          
+                       <%= f.submit yield(:button), class: "btn btn-block btn-primary btn-signup" %>
+                    <% end %>
+                  </div>
                 </div>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
         <% end %>
       </tbody>
     </table>
