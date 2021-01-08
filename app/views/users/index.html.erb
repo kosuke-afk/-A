@@ -1,27 +1,54 @@
 <% provide(:title, "ユーザー一覧ページ") %>
+<% provide(:class_text, "edit") %>
+<% provide(:button, "変更") %>
 <h1>ユーザー一覧</h1>
-<div class="text-right">
-  <%= form_tag(users_path,method: :get) do %>
-    <%= text_field_tag :search %>
-    <%= submit_tag "検索" %>
-  <% end %>
-</div>
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
-    <%= will_paginate %>
-    <table class="table table-condensed ">
+    <table class="table ">
       <tbody>
-        <% @users.each do |user| %>
+        <% @users.each.with_index(1) do |user, item| %>
           <tr>
-            <td ><%= link_to user.name, user_path(user) %></td>
-            <td class="text-right"><%= link_to "基本情報編集", edit_basic_info_user_path(user), class: "btn btn-success" %>
-                <%= link_to "削除", user, method: :delete, 
-                class: "btn btn-danger", data: { confirm: "削除してよろしいですか？"} %>
+           <td><%= user.name %></td> 
+          </tr>
+          <tr>
+            <td><%= link_to "削除", user, method: :delete, 
+                class: "btn btn-primary", data: { confirm: "削除してよろしいですか？"} %>
+            </td>
+          </tr>
+          <tr>
+            <td class="btn-edit">
+              <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample<%= "#{item}" %>">編集</a>
+            </td>
+          </tr>
+          <tr class="collapse" id="collapseExample<%= "#{item}" %>">
+            <td>
+              <div class="row">
+                <div class="col-md-10">
+                  <%= form_with(model: user, url: user_path(user), local: true, method: :patch) do |f| %>
+                
+                     <%= f.label :name, class: "label-#{yield(:class_text)}" %>
+                     <%= f.text_field :name, class: "form-control" %>
+                        
+                     <%= f.label :email, class: "label-#{yield(:class_text)}" %>
+                     <%= f.email_field :email, class: "form-control" %>
+                     
+                     <%= f.label :department, class: "label-#{yield(:class_text)}" %>
+                     <%= f.text_field :department, class: "form-control" %>
+                        
+                     <%= f.label :password, class: "label-#{yield(:class_text)}" %>
+                     <%= f.password_field :password, class: "form-control" %>
+                        
+                     <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
+                     <%= f.password_field :password_confirmation, class: "form-control" %>
+                        
+                     <%= f.submit yield(:button), class: "btn btn-block btn-primary btn-signup" %>
+                  <% end %>
+                </div>
+              </div>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
-    <%= will_paginate %>
   </div>
 </div>

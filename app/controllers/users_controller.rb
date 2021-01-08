@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [ :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :log_in_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :admin_or_correct_user, only: [:edit, :update]
-  before_action :instructor_user_or_correct_user, only: :show
+  before_action :admin_instructor_user_or_correct_user, only: :new
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
   before_action :set_one_month, only: :show
   
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
   end
   
   def index
-    @users = User.paginate(page: params[:page]).search(params[:search])
+    @users = User.where.not(admin: true)
   end
   
   def new
@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   def update
     if @user.update_attributes(params_user)
       flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to @user
+      redirect_to users_url
     else
       flash.now[:danger] = "ユーザー情報の更新に失敗しました。"
       render :edit
