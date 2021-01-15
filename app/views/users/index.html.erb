@@ -6,6 +6,14 @@
   <div class="col-md-10 col-md-offset-1">
     <table class="table ">
       <tbody>
+        <tr>
+          <td>
+            <%= form_tag(import_users_path, multipart: true) do %>
+              <%= file_field_tag :file %>
+              <%= submit_tag "CSVインポート", class: "btn btn-primary" %>
+            <% end %>
+          </td>
+        </tr>
         <% @users.each.with_index(1) do |user, item| %>
             <tr>
              <td><%= user.name %></td> 

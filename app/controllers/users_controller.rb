@@ -27,21 +27,12 @@ class UsersController < ApplicationController
   
   def index
     @users = User.where.not(admin: true)
-    @user = User.find(2)
     @users = User.all
   end
   
   def edit
   end
   
-  def update
-    if @user.update_attributes(params_user)
-      flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to users_path
-    else
-      render :edit
-    end
-  end
   
   def new
     @user = User.new
@@ -84,6 +75,33 @@ class UsersController < ApplicationController
       redirect_to users_url
     else
       render :edit_basic_info
+    end
+  end
+  
+  def import
+    ActiveRecord::Base.transaction do
+      if params[:file].present?
+        if File.extname(params[:file].original_filename) == ".csv"
+            CSV.foreach(params[:file].path, headers: true) do |row|
+                @user = User.new
+                @user.attributes = row.to_hash.slice(*updatable_attributes)
+                @user.save!
+            end
+            flash[:success] = "新規作成しました。"
+            redirect_to users_url and return
+          # User.import(params[:file])
+          # redirect_to users_url and return
+        else
+          flash[:info] = "ファイルの形式が違います。csvファイルをインポートしてください。"
+          redirect_to users_url and return
+        end
+      else
+        flash[:info] = "ファイルを選択してください"
+        redirect_to users_url
+      end
+    rescue ActiveRecord::RecordInvalid
+      flash[:danger] = "新規作成に失敗しました。やり直してください"
+      redirect_to users_url
     end
   end
   
@@ -131,6 +149,9 @@ class UsersController < ApplicationController
       send_data(csv_data, filename: "勤怠情報.csv")
     end
     
+    def updatable_attributes
+      ['name','email','password','password_confirmation','department','basic_start', 'basic_finish']
+    end
   
   
   

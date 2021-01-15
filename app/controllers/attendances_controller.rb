@@ -119,7 +119,7 @@ class AttendancesController < ApplicationController
        flash[:success] = "残業申請を#{n1}件承認、#{n2}件否認、#{n3}件なしに変更しました。"
      end
      redirect_to @user
-   rescue ActiveRecord::RecordInvald
+   rescue ActiveRecord::RecordInvalid
      flash[:danger] = "残業申請の変更をやり直してください。"
      redirect_to @user
    end

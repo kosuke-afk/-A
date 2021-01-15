@@ -58,5 +58,20 @@ class User < ApplicationRecord
     end
   end
   
+  # def self.import(file)
+  #   ActiveRecord::Base.transaction do
+  #     CSV.foreach(file.path, headers: true) do |row|
+  #       user = new
+  #       user.attributes = row.to_hash.slice(*updatable_attributes)
+  #       user.save!
+  #     end
+  #   rescue ActiveRecord::RecordInvalid
+  #     yield
+  #   end
+  # end
+  
+  # def self.updatable_attributes
+  #   ['name','email','password','password_confirmation','department','basic_start', 'basic_finish']
+  # end
   
 end
