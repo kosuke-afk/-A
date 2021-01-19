@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [ :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :log_in_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :admin_or_correct_user, only: [:edit, :update]
-  before_action :admin_instructor_user_or_correct_user, only: :show
+  before_action :admin_superior_or_correct_user, only: :show
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
   before_action :admin_or_correct_user, only: [ :edit, :update]
   before_action :admin_or_correct_user, only: [ :edit, :update]
@@ -105,12 +105,18 @@ class UsersController < ApplicationController
     end
   end
   
+  def working_index
+    @attendances = Attendance.where(worked_on: Date.current)
+    @working_index = User.joins(:attendances).where(attendances: {worked_on: Date.current,finished_at: nil})
+                                             .where.not(attendances: {started_at: nil})
+  end
+  
   
   
   private
   
     def params_user
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :affiliation, :password, :password_confirmation)
     end
     
     def basic_info_params
@@ -150,7 +156,7 @@ class UsersController < ApplicationController
     end
     
     def updatable_attributes
-      ['name','email','password','password_confirmation','department','basic_start', 'basic_finish']
+      ['name','email','password','password_confirmation','affiliation','uid','employee_number','basic_start', 'basic_finish']
     end
   
   

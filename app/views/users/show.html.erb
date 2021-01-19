@@ -17,7 +17,7 @@
         <td class="table-text">初日<%= l(@first_day,format: :short) %></td>
       </tr>
       <tr class="user-table-item">
-        <td>所属:<%= @user.department.present? ? @user.department : "未所属" %></td>
+        <td>所属:<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
         <td>名前:<%= @user.name %></td>
         <td>コード</td>
         <td>202</td>
@@ -27,7 +27,7 @@
     </table>
     
       <ul class="list-unstyled">
-        <% if @user.instructor_user? %>
+        <% if @user.superior? %>
             <li>【所属長承認申請のお知らせ】</li>
             <li>
               <% if @attendance_edit.present? %>

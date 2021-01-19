@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
   
   resources :users do
-    collection { post :import }
+    collection { 
+      post :import 
+      get :working_index
+    }
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'
@@ -16,6 +19,7 @@ Rails.application.routes.draw do
       patch 'attendances/update_over_time_approval'
       get 'attendances/attendance_approval'
       patch 'attendances/update_attendance_approval'
+      get 'attendances/attendance_log'
     end
     resources :attendances, only: :update do
       get 'over_time'

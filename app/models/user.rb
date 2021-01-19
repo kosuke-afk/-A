@@ -8,10 +8,12 @@ class User < ApplicationRecord
   validates :email, presence: true, length: { maximum: 100 },
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: true
-  validates :department, length: { in: 2..30 }, allow_blank: true
+  validates :affiliation, length: { in: 2..30 }, allow_blank: true
   validates :basic_start, presence: true
   validates :basic_finish, presence: true
   validates :work_time, presence: true
+  validates :uid, presence: true, uniqueness: true
+  validates :employee_number, presence: true, uniqueness: true
   
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
@@ -71,7 +73,7 @@ class User < ApplicationRecord
   # end
   
   # def self.updatable_attributes
-  #   ['name','email','password','password_confirmation','department','basic_start', 'basic_finish']
+  #   ['name','email','password','password_confirmation','affiliation','basic_start', 'basic_finish']
   # end
   
 end

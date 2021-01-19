@@ -31,7 +31,7 @@ class AttendancesController < ApplicationController
   end
   
   def edit_one_month
-    @instructor = User.where(instructor_user: true).where.not(name: @user.name)
+    @instructor = User.where(superior: true).where.not(name: @user.name)
   end
   
   def update_one_month
@@ -64,7 +64,7 @@ class AttendancesController < ApplicationController
   
   def over_time
     @attendance = @user.attendances.find(params[:attendance_id])
-    @instructor = User.where(instructor_user: true).where.not(id: @user.id)
+    @instructor = User.where(superior: true).where.not(id: @user.id)
   end
   
   def update_over_time
@@ -114,7 +114,7 @@ class AttendancesController < ApplicationController
        end
      end
      if (n1 == 0) && (n2 == 0) && (n3 == 0)
-       flash[:info] = "変更するにはテェックを入れてください。"
+       flash[:info] = "変更するにはテェックを入れて、申請中以外を選択してください。"
      else
        flash[:success] = "残業申請を#{n1}件承認、#{n2}件否認、#{n3}件なしに変更しました。"
      end
