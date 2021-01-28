@@ -140,10 +140,18 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9"></td>
+          <td></td>
+          <td colspan="2"></td>
+          <td colspan="6"></td>
           <td><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
           <td colspan="5"></td>
-          <td></td>
+          <td>
+            <%= form_with model: @one_month_attendance, url: attendances_update_one_month_user_path(current_user), local: true, method: :patch do |f| %>
+              <%= f.collection_select(:one_month_instructor, @one_month_instructor, :name, :name, {class: "form-control"}) %>
+              <br>
+              <%= f.submit "申請", class: "btn btn-primary" %>
+            <% end %>
+          </td>
         </tr>
       </tfoot>
     </table>

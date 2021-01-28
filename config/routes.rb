@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       patch 'attendances/update_over_time_approval'
       get 'attendances/attendance_approval'
       patch 'attendances/update_attendance_approval'
+      patch 'attendances/update_one_month'
       get 'attendances/attendance_log'
       get 'change_log'
     end

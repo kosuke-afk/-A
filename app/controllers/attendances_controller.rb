@@ -222,6 +222,9 @@ class AttendancesController < ApplicationController
             end   
   end
   
+  def update_one_month
+  end
+  
   private
     
     def attendances_params
