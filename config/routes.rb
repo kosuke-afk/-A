@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       get 'attendances/attendance_approval'
       patch 'attendances/update_attendance_approval'
       get 'attendances/attendance_log'
+      get 'change_log'
     end
     resources :attendances, only: :update do
       get 'over_time'

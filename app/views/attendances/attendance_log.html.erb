@@ -1,0 +1,52 @@
+<% provide(:title, '勤怠ログ') %>
+
+<h1>勤怠ログ</h1>
+<div>
+  <%= form_with url: attendances_attendance_log_user_path(current_user), method: :get, local: true do |f| %>
+    <%= f.select :year, $year, prompt: "年" %>
+    <%= f.select :month, $month, prompt: "月"  %>
+    <%= f.submit "検索", class: "btn btn-primary" %>
+  <% end %>
+</div>
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>変更前出社時間</th>
+          <th>変更前退社時間</th>
+          <th>変更後出社時間</th>
+          <th>変更後退社時間</th>
+          <th>指示者</th>
+          <th>承認日</th>
+        </tr>
+      </thead>
+      <% if @logs.present? %>
+        <% @logs.each do |log| %>
+          <tbody>
+            <tr>
+              <td><%= l(log.worked_on, format: :short) %></td>
+              <td>
+                <% if log.before_started.present? %>
+                  <%= l(log.before_started, format: :time) %>
+                <% end %>
+              </td>
+              <td>
+                <% if log.before_finished.present? %>
+                  <%= l(log.before_finished, format: :time) %>
+                <% end %>
+              </td>
+              <td><%= l(log.after_started, format: :time) %></td>
+              <td><%= l(log.after_finished, format: :time) %></td>
+              <td><%= log.instructor %></td>
+              <td>
+                <%= l(log.approval_day, format: :long) %>
+              </td>
+            </tr>
+          </tbody>
+        <% end %>
+      <% end %>
+    </table>
+  </div>
+</div>

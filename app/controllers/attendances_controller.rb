@@ -84,9 +84,9 @@ class AttendancesController < ApplicationController
   
   def over_time_approval
     @user = User.find(params[:id])
-    # @over_time_users = User.joins(:attendances)
-    #                       .select('users.*, attendances.*')
-    #                       .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
+    @over_time_users = User.select('users.*,attendances.*')
+                           .joins(:attendances)
+                           .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
     @over_time_attendances = Attendance.where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
                                        .order(:user_id).group_by(&:user_id)
   end
@@ -144,6 +144,8 @@ class AttendancesController < ApplicationController
               n1 += 1
               item[:started_at] = @attendance.started_at_temporary
               item[:finished_at] = @attendance.finished_at_temporary
+              @start = @attendance.started_at
+              @finish = @attendance.finished_at
               item[:attendance_change] = nil
               item[:started_at_temporary] = nil
               item[:finished_at_temporary] = nil
@@ -161,6 +163,17 @@ class AttendancesController < ApplicationController
               item[:finished_at_temporary] = nil
             end
             @attendance.update_attributes!(item)
+            # この中を改善
+            if (@attendance.attendance_confirmation == "承認") && (@attendance.log.nil?)
+              Log.create!(attendance_id: @attendance.id, worked_on: @attendance.worked_on, before_started: @start, 
+                                      before_finished: @finish, after_started: @attendance.started_at, 
+                                      after_finished: @attendance.finished_at,
+                                      instructor: @attendance.attendance_instructor, 
+                                      approval_day: Date.current)
+            elsif (@attendance.attendance_confirmation == "承認") && (@attendance.log.approval_day.present?)
+              @attendance.log.update_attributes!(after_started: @attendance.started_at, after_finished: @attendance.finished_at,
+                                                approval_day: Date.current)
+            end
           else
             n4 += 1
           end
@@ -180,6 +193,33 @@ class AttendancesController < ApplicationController
       flash[:danger] = "勤怠申請の変更をやり直してください"
       redirect_to @user
     end
+  end
+  
+  def attendance_log
+     @user = User.find(params[:id])
+     @logs =  #Log.joins(:attendance).where(attendances: {user_id: params[:id]})
+            if (params[:year]) && (params[:month])
+              if (params[:year].present?) && (params[:month].present?)
+                @year = "#{params[:year]}-#{params[:month]}-01"
+                if Log.attendance_logs_for(params[:id]).worked_on_between(@year.to_date, @year.to_date.end_of_month).present?
+                  Log.attendance_logs_for(params[:id]).worked_on_between(@year.to_date, @year.to_date.end_of_month)
+                else
+                  nil
+                end
+              elsif (params[:year] != "年")
+                @start = "#{params[:year]}-01-01"
+                @finish = "#{params[:year]}-12-31"
+                if Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date).present?
+                  Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date)
+                else
+                  nil
+                end
+              elsif (params[:month] != "月")
+                nil
+              end
+            else
+              Log.joins(:attendance).where(attendances: {user_id: params[:id]})
+            end   
   end
   
   private
