@@ -7,6 +7,10 @@ class ApplicationController < ActionController::Base
   def set_user
     @user = User.find(params[:id])
   end
+  
+  def set_userid
+    @user = User.find(params[:user_id])
+  end
     
   # ログインユーザーのみが使えるようにする認可機能
   def log_in_user

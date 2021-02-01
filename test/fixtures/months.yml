@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  one_month_instructor: MyString
+  one_month_confirmation: MyString
+  one_month_change: false
+  year: 1
+  month: 1
+
+two:
+  one_month_instructor: MyString
+  one_month_confirmation: MyString
+  one_month_change: false
+  year: 1
+  month: 1

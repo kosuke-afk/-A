@@ -13,13 +13,15 @@ class UsersController < ApplicationController
   
   
   def show
+    @this_month_attendance = Month.find_by(year: @first_day.year, month: @first_day.month,
+                                           one_month_confirmation: ["申請中","承認"], user_id: params[:id])
     @worked_sum = @attendances.where.not(started_at: nil).count
     @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
     @attendance_edit = User.joins(:attendances)
                            .where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
     @one_month_instructor = User.where(superior: true)
                      .where.not(name: current_user.name)
-    @one_month_attendance = Attendance.new
+    @one_month_attendance = Month.new
     respond_to do |format|
       format.html
       format.csv do |csv|

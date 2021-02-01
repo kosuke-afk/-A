@@ -84,9 +84,9 @@ class AttendancesController < ApplicationController
   
   def over_time_approval
     @user = User.find(params[:id])
-    @over_time_users = User.select('users.*,attendances.*')
-                           .joins(:attendances)
-                           .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
+    # @over_time_users = User.eager_load(:attendances)
+    #                       .select('attendances.*')
+    #                       .where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
     @over_time_attendances = Attendance.where(attendances: {instructor: @user.name, instructor_confirmation: "申請中"})
                                        .order(:user_id).group_by(&:user_id)
   end
@@ -222,9 +222,6 @@ class AttendancesController < ApplicationController
             end   
   end
   
-  def update_one_month
-  end
-  
   private
     
     def attendances_params
@@ -233,9 +230,7 @@ class AttendancesController < ApplicationController
                                    :attendance_confirmation, :note])[:attendances]
     end
     
-    def set_userid
-      @user = User.find(params[:user_id])
-    end
+   
     
     def set_user_id_attendance_id
       @user = User.find(params[:user_id])

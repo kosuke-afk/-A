@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'months/update'
+
   root 'static_pages#top'
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
@@ -19,7 +21,6 @@ Rails.application.routes.draw do
       patch 'attendances/update_over_time_approval'
       get 'attendances/attendance_approval'
       patch 'attendances/update_attendance_approval'
-      patch 'attendances/update_one_month'
       get 'attendances/attendance_log'
       get 'change_log'
     end
@@ -27,6 +28,7 @@ Rails.application.routes.draw do
       get 'over_time'
       patch 'update_over_time'
     end
+    resources :months, only: :create
   end
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
