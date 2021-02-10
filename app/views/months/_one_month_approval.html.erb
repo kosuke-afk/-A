@@ -1,0 +1,49 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-body modal-b">
+      <%= form_with model: @month, url: months_update_one_month_approval_user_path(@user), local: true, method: :patch do |f| %>
+        <div class="row">
+          <div class="col-md-10 col-md-offset-1">
+            <% @request_months.each do |id, months| %>
+              <h1><%= User.find(id).name %></h1>
+              <table class="table table-condensed table-hover ">
+                <thead>
+                  <tr>
+                    <th class="text-center">年</th>
+                    <th class="text-center">月</th>
+                    <th class="text-center">指示者確認印</th>
+                    <th class="text-center">変更</th>
+                    <th class="text-center">勤怠を確認する</th>
+                  </tr>
+                </thead>
+                  
+                <% months.each do |month| %>
+                  <%= f.fields_for "months[]", month do |a| %>
+                    <tbody>
+                      <tr>
+                        <td class="text-center"><%= month.year %>年</td>
+                        <td class="text-center"><%= month.month %>月</td>
+                        <td class="text-center"><%= a.select :one_month_confirmation, $confirmation, {}, class: "form-control" %></td>
+                        <td class="text-center">
+                          <%= a.label :one_month_change, class: "checkbox checkbox-position" do %>
+                            <%= a.check_box :one_month_change %>
+                          <% end %>
+                        </td>
+                        <td class="text-center">
+                          <%= link_to "確認", "#", class: "btn btn-primary btn-lg" %>
+                        </td>
+                      </tr>
+                    </tbody>
+                  <% end %>
+                <% end %>
+              </table>
+            <% end %>
+            <div>
+              <%= f.submit "変更", class: "btn btn-primary btn-one-month" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

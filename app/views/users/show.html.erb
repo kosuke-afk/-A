@@ -28,24 +28,30 @@
     
       <ul class="list-unstyled">
         <% if @user.superior? %>
-            <li>【所属長承認申請のお知らせ】</li>
-            <li>
-              <% if @attendance_edit.present? %>
-                <%= link_to "【勤怠変更申請のお知らせ】",attendances_attendance_approval_user_path(@user), remote: true, class: "text-danger" %>
-                <span class="text-danger"><%= @attendance_edit.count %>件の通知があります。</span>
-              <% else %>
-                【勤怠変更申請のお知らせ】
-              <% end %>
-            </li>
-          
-          <% if @over_time.present? %>
-            <li class="text-danger">
-              <%= link_to "【残業申請のお知らせ】",attendances_over_time_approval_user_path(@user), remote: true, class: "text-danger" %>
-              <span><%= @over_time.count %>件の通知があります。</span>
-            </li>
-          <% else %>
-            <li>【残業申請のお知らせ】</li>
-          <% end %>
+          <li>
+            <% if @this_month_request.present? %>
+              <%= link_to "【所属長承認申請のお知らせ】",months_one_month_approval_user_path(current_user),remote: true, class: "text-danger" %>
+              <span class="text-danger"><%= @this_month_request.count %>件の通知があります。</span>
+            <% else %>
+            【所属長承認申請のお知らせ】
+            <% end %>
+          </li>
+          <li>
+            <% if @attendance_edit.present? %>
+              <%= link_to "【勤怠変更申請のお知らせ】",attendances_attendance_approval_user_path(@user), remote: true, class: "text-danger" %>
+              <span class="text-danger"><%= @attendance_edit.count %>件の通知があります。</span>
+            <% else %>
+              【勤怠変更申請のお知らせ】
+            <% end %>
+          </li>
+          <li>
+            <% if @over_time.present? %>
+                <%= link_to "【残業申請のお知らせ】",attendances_over_time_approval_user_path(@user), remote: true, class: "text-danger" %>
+                <span><%= @over_time.count %>件の通知があります。</span>
+            <% else %>
+              【残業申請のお知らせ】
+            <% end %>
+          </li>
         <% end %>
       </ul>
     
@@ -162,5 +168,6 @@
   
   
   <div id="over-time" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+  <div id="one_month_approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
   <div id="over-time-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
   <div id="attendance_approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
