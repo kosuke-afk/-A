@@ -29,8 +29,8 @@
                 <td><%= attendance.time_field :finished_at_temporary, value: attendance_value_finished(day), class: "form-control" %></td>
               <% end %>
               <td>
-                <%= attendance.label :next_day, class: "check_box" do %>
-                  <%= attendance.check_box :next_day %>
+                <%= attendance.label :one_month_next, class: "checkbox checkbox-position" do %>
+                  <%= attendance.check_box :one_month_next %>
                 <% end %>
               </td>
               <td>

@@ -1,0 +1,22 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title modal-t">拠点新規作成</h1>
+    </div>
+    <div class="modal-body modal-b">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+          <%= form_with(model: base, local: true) do |f| %>
+            <%= f.label :base_number %>
+            <%= f.text_field :base_number, class: "form-control" %>
+            <%= f.label :base_name %>
+            <%= f.text_field :base_name, class: "form-control" %>
+            <%= f.label :kind %>
+            <%= f.select :kind, [ ["出勤","出勤"], ["退勤", "退勤"]], {prompt: "選択してください"},{class: "form-control"} %>
+            <%= f.submit "#{yield(:button)}", class: "btn" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

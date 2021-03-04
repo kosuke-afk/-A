@@ -3,6 +3,7 @@ ja:
     models:
       user: ユーザー
       attendance: 勤怠
+      base: 拠点
     attributes:
         user:
           id: ID
@@ -27,3 +28,7 @@ ja:
           aim: 業務処理内容
           instructor: 指示者確認
           user: ユーザーID
+        base: 
+          base_name: 拠点名
+          base_number: 拠点番号
+          kind: 拠点種類

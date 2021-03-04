@@ -44,6 +44,13 @@ class ApplicationController < ActionController::Base
        redirect_to root_url
      end
    end
+   
+   def superior_user
+     unless (current_user.superior?)
+       flash[:danger] = "権限がありません。"
+       redirect_to root_url
+     end
+   end
   
   
   

@@ -1,14 +1,15 @@
 class AttendancesController < ApplicationController
   
-  before_action :set_user, only: [:edit_one_month,:update_one_month, :over_time_approval, :update_over_time_approval, :attendance_approval, :update_attendance_approval]
+  before_action :set_user, only: [:edit_one_month,:update_one_month, :over_time_approval, :update_over_time_approval, :attendance_approval, 
+                                  :update_attendance_approval, :attendance_log, ]
   before_action :set_userid, only: [:update]
   before_action :set_user_id_attendance_id, only: [:over_time, :update_over_time]
-  before_action :log_in_user, only: [:update, :edit_one_month, :update_one_month, :over_time, :update_over_time, :over_time_approval,
-                                     :update_over_time_approval, :attendance_approval, :update_attendance_approval]
   before_action :set_one_month, only: [:edit_one_month, :update_one_month]
-  before_action :admin_or_correct_user, only: [:update,:edit_one_month, :update_one_month]
+  before_action :log_in_user, only: [:update, :edit_one_month, :update_one_month, :over_time, :update_over_time, :over_time_approval,
+                                     :update_over_time_approval, :attendance_approval, :update_attendance_approval, :attendance_log, ]
   before_action :correct_user, only: [:over_time,:update_over_time, :over_time_approval, :update_over_time_approval, :attendance_approval,
-                                      :update_attendance_approval]
+                                      :update_attendance_approval, :update, :edit_one_month, :update_one_month, :attendance_log, ]
+  before_action :superior_user, only: [:attendance_approval, :update_attendance_approval, :attendance_approval, :update_attendance_approval]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -44,6 +45,12 @@ class AttendancesController < ApplicationController
             flash[:info] = "出勤時間、退勤時間、申請先の上長を入力してください。"
             redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
           else
+            if (item[:finished_at_temporary] < item[:started_at_temporary])
+              if (item[:one_month_next] == "0")
+                flash[:info] = "出勤時間より早い退勤時間は無効です。"
+                redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+              end
+            end
             attendance.update_attributes!(item)
             attendance.update_attributes(attendance_confirmation: "申請中")
             n1 += 1
@@ -196,7 +203,6 @@ class AttendancesController < ApplicationController
   end
   
   def attendance_log
-     @user = User.find(params[:id])
      @logs =  #Log.joins(:attendance).where(attendances: {user_id: params[:id]})
             if (params[:year]) && (params[:month])
               if (params[:year].present?) && (params[:month].present?)
@@ -226,7 +232,7 @@ class AttendancesController < ApplicationController
     
     def attendances_params
       params.require(:user)
-            .permit(attendances: [ :started_at_temporary, :finished_at_temporary, :attendance_instructor, 
+            .permit(attendances: [ :started_at_temporary, :finished_at_temporary, :one_month_next, :attendance_instructor, 
                                    :attendance_confirmation, :note])[:attendances]
     end
     

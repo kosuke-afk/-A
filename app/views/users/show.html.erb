@@ -58,7 +58,7 @@
     <div class="btn-users-show">
       <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
       <%= link_to "CSV出力", user_path(format: :csv), class: "btn btn-primary" %>
-      <br><%= link_to "勤怠修正ログ (承認済み）", '#', class: "btn btn-primary" %>
+      <br><%= link_to "勤怠修正ログ (承認済み）", attendances_attendance_log_user_path(@user), class: "btn btn-primary" %>
     </div>
     
     <table class="table table-bordered table-condensed table-hover" id="table-attendances">
@@ -138,7 +138,8 @@
                 勤怠変更申請 <%= day.attendance_confirmation %>
               <% end %>
               <% if day.instructor_confirmation.present? %>
-                <br>残業申請 <%= day.instructor_confirmation %></br>
+                <br><%= day.instructor %>
+                <br>残業申請 <%= day.instructor_confirmation %>
               <% end %>
             </td>
           </tr>
