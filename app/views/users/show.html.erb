@@ -5,9 +5,13 @@
     <table class="table table-condensed table-bordered" id="table-user">
       <tr>
         <td>
-          <%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-default" %>
-          <%= l(@first_day,format: :middle) %> 時間管理表
-          <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-default"%>
+          <% if current_user.superior? %>
+             <%= l(@first_day,format: :middle) %> 時間管理表
+          <% else %>
+            <%= link_to "←", user_path(date: @first_day.prev_month), class: "btn btn-default" %>
+            <%= l(@first_day,format: :middle) %> 時間管理表
+            <%= link_to "→", user_path(date: @first_day.next_month), class: "btn btn-default"%>
+          <% end %>
         </td>
         <td>
           指定勤務開始時間:<%= l(@user.basic_start, format: :time) %>

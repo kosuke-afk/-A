@@ -51,6 +51,7 @@ class AttendancesController < ApplicationController
                 redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
               end
             end
+            item[:one_month_next] = nil
             attendance.update_attributes!(item)
             attendance.update_attributes(attendance_confirmation: "申請中")
             n1 += 1
@@ -172,7 +173,7 @@ class AttendancesController < ApplicationController
             @attendance.update_attributes!(item)
             # この中を改善
             if (@attendance.attendance_confirmation == "承認") && (@attendance.log.nil?)
-              Log.create!(attendance_id: @attendance.id, worked_on: @attendance.worked_on, before_started: @start, 
+              @attendance.log.create!(log_worked_on: @attendance.worked_on, before_started: @start, 
                                       before_finished: @finish, after_started: @attendance.started_at, 
                                       after_finished: @attendance.finished_at,
                                       instructor: @attendance.attendance_instructor, 
@@ -215,8 +216,8 @@ class AttendancesController < ApplicationController
               elsif (params[:year] != "年")
                 @start = "#{params[:year]}-01-01"
                 @finish = "#{params[:year]}-12-31"
-                if Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date).present?
-                  Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date)
+                if Log.attendance_logs_for(params[:id])._between(@start.to_date,@finish.to_date).present?
+                  Log.attendance_logs_for(params[:id])._between(@start.to_date,@finish.to_date)
                 else
                   nil
                 end

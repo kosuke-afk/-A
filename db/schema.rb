@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210303134959) do
+ActiveRecord::Schema.define(version: 20210305091545) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 20210303134959) do
   end
 
   create_table "logs", force: :cascade do |t|
-    t.date "worked_on"
+    t.date "log_worked_on"
     t.time "before_started"
     t.time "before_finished"
     t.time "after_started"
