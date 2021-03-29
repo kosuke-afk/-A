@@ -150,10 +150,12 @@ class AttendancesController < ApplicationController
             @attendance = Attendance.find(id)
             if item[:attendance_confirmation] == "承認"
               n1 += 1
-              item[:started_at] = @attendance.started_at_temporary
-              item[:finished_at] = @attendance.finished_at_temporary
-              @start = @attendance.started_at
-              @finish = @attendance.finished_at
+              if @attendance.started_at_temporary.present?
+                item[:started_at] = @attendance.started_at_temporary
+                item[:finished_at] = @attendance.finished_at_temporary
+                @start = @attendance.started_at
+                @finish = @attendance.finished_at
+              end
               item[:attendance_change] = nil
               item[:started_at_temporary] = nil
               item[:finished_at_temporary] = nil
@@ -173,14 +175,15 @@ class AttendancesController < ApplicationController
             @attendance.update_attributes!(item)
             # この中を改善
             if (@attendance.attendance_confirmation == "承認") && (@attendance.log.nil?)
-              @attendance.log.create!(log_worked_on: @attendance.worked_on, before_started: @start, 
+              @attendance.create_log!(log_worked_on: @attendance.worked_on, before_started: @start, 
                                       before_finished: @finish, after_started: @attendance.started_at, 
                                       after_finished: @attendance.finished_at,
-                                      instructor: @attendance.attendance_instructor, 
+                                      log_instructor: @attendance.attendance_instructor, 
                                       approval_day: Date.current)
-            elsif (@attendance.attendance_confirmation == "承認") && (@attendance.log.approval_day.present?)
-              @attendance.log.update_attributes!(after_started: @attendance.started_at, after_finished: @attendance.finished_at,
-                                                approval_day: Date.current)
+            elsif (@attendance.attendance_confirmation == "承認") && (@attendance.log.present?)
+              @attendance.log.update_attributes!(before_started: @start, before_finished: @finish,
+                                                 after_started: @attendance.started_at, after_finished: @attendance.finished_at,
+                                                 approval_day: Date.current)
             end
           else
             n4 += 1
@@ -216,8 +219,8 @@ class AttendancesController < ApplicationController
               elsif (params[:year] != "年")
                 @start = "#{params[:year]}-01-01"
                 @finish = "#{params[:year]}-12-31"
-                if Log.attendance_logs_for(params[:id])._between(@start.to_date,@finish.to_date).present?
-                  Log.attendance_logs_for(params[:id])._between(@start.to_date,@finish.to_date)
+                if Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date).present?
+                  Log.attendance_logs_for(params[:id]).worked_on_between(@start.to_date,@finish.to_date)
                 else
                   nil
                 end

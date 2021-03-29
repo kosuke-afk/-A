@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     collection { 
       post :import 
       get :working_index
+      get :basic_info
+      post :basic_update
     }
     member do
       get 'edit_basic_info'

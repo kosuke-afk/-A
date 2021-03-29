@@ -54,7 +54,16 @@
                           
                        <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
                        <%= f.password_field :password_confirmation, class: "form-control" %>
-                          
+                       
+                       <%= f.label :work_time, class: "label-#{yield(:class_text)}" %>
+                       <%= f.time_field :work_time, class: "form-control" %>
+                       
+                       <%= f.label :basic_start, class: "label-#{yield(:class_text)}" %>
+                       <%= f.time_field :basic_start, class: "form-control" %>
+                       
+                       <%= f.label :basic_finish, class: "label-#{yield(:class_text)}" %>
+                       <%= f.time_field :basic_finish, class: "form-control" %>
+                       
                        <%= f.submit yield(:button), class: "btn btn-block btn-primary btn-signup" %>
                     <% end %>
                   </div>

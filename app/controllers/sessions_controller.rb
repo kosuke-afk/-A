@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  
+  before_action :except_login_user, only: [:new]
   def new
   end
   

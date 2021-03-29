@@ -11,7 +11,19 @@ class ApplicationController < ActionController::Base
   def set_userid
     @user = User.find(params[:user_id])
   end
-    
+  
+  def except_admin_user
+    if current_user.admin?
+      redirect_to root_url
+    end
+  end
+  
+  def except_login_user
+    if logged_in?
+      flash[:info] = "すでにログインしています。"
+      redirect_to root_url
+    end
+  end
   # ログインユーザーのみが使えるようにする認可機能
   def log_in_user
     unless logged_in?

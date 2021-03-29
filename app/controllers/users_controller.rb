@@ -1,31 +1,32 @@
 class UsersController < ApplicationController
   require 'csv'
   
-  before_action :set_user, only: [ :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :log_in_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :except_admin_user, only: :show
+  before_action :set_user, only: [ :show, :edit, :update, :destroy]
+  before_action :log_in_user, only: [:show, :edit, :update, :destroy, :basic_info, :basic_update, :working_index]
   before_action :admin_or_correct_user, only: [:edit, :update]
   before_action :admin_superior_or_correct_user, only: :show
-  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :admin_user, only: [:index, :destroy, :basic_info, :basic_update, :working_index]
   before_action :admin_or_correct_user, only: [ :edit, :update]
-  before_action :admin_or_correct_user, only: [ :edit, :update]
-  before_action :admin_user, only: [ :index, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :set_one_month, only: :show
+  before_action :set_one_month, only: [:show]
   
   
   def show
-    @this_month_attendance = Month.find_by(year: @first_day.year, month: @first_day.month,
-                                           one_month_confirmation: ["申請中","承認"], user_id: params[:id])
-                                           
-    @this_month_request = Month.where(months: {one_month_confirmation: "申請中", one_month_instructor: @user.name})
-    @worked_sum = @attendances.where.not(started_at: nil).count
-    @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
-    @attendance_edit = User.joins(:attendances)
-                           .where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
-    @one_month_instructor = User.where(superior: true)
-                     .where.not(name: current_user.name)
-    @one_month_attendance = Month.new
     respond_to do |format|
-      format.html
+      format.html do 
+        @this_month_attendance = Month.find_by(year: @first_day.year, month: @first_day.month,
+                                               one_month_confirmation: ["申請中","承認"], user_id: params[:id])
+                                               
+        @this_month_request = Month.where(months: {one_month_confirmation: "申請中", one_month_instructor: @user.name})
+        @worked_sum = @attendances.where.not(started_at: nil).count
+        @over_time = User.joins(:attendances).where(attendances: {instructor_confirmation: "申請中", instructor: @user.name})
+        @attendance_edit = User.joins(:attendances)
+                               .where(attendances: {attendance_confirmation: "申請中", attendance_instructor: @user.name})
+        @one_month_instructor = User.where(superior: true)
+                         .where.not(name: current_user.name)
+        @one_month_attendance = Month.new
+      end
+    
       format.csv do |csv|
         send_attendances_csv(@attendances)
       end
@@ -34,7 +35,7 @@ class UsersController < ApplicationController
   
   def index
     @users = User.where.not(admin: true)
-    @users = User.all
+    @users = User.where.not(admin: true)
   end
   
   def edit
@@ -73,17 +74,17 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
   
-  def edit_basic_info
-  end
+  # def edit_basic_info
+  # end
   
-  def update_basic_info
-    if @user.update_attributes(basic_info_params)
-      flash[:success] = "#{@user.name}の基本情報を更新しました。"
-      redirect_to users_url
-    else
-      render :edit_basic_info
-    end
-  end
+  # def update_basic_info
+  #   if @user.update_attributes(basic_info_params)
+  #     flash[:success] = "#{@user.name}の基本情報を更新しました。"
+  #     redirect_to users_url
+  #   else
+  #     render :edit_basic_info
+  #   end
+  # end
   
   def import
     ActiveRecord::Base.transaction do
@@ -118,6 +119,12 @@ class UsersController < ApplicationController
                                              .where.not(attendances: {started_at: nil})
   end
   
+  def basic_info
+  end
+  
+  def basic_update
+  end
+  
   
   
   private
@@ -138,12 +145,13 @@ class UsersController < ApplicationController
       end
     end
     
-    def send_attendances_csv(attendances)
+   def send_attendances_csv(attendances)
       csv_data = CSV.generate do |csv|
         column_names = %w(日付 曜日 出社 退社)
         csv << column_names
         attendances.each do |attendance|
-          if attendance.started_at.present? && attendance.finished_at.present?
+          if ((attendance.started_at.present?) && (attendance.finished_at.present?)) &&
+             (attendance.attendance_confirmation == "承認" || attendance.attendance_confirmation == nil)
             column_values = [
               l(attendance.worked_on, format: :short),
               $days_of_the_week[attendance.worked_on.wday],
@@ -160,7 +168,9 @@ class UsersController < ApplicationController
         end
       end
       send_data(csv_data, filename: "勤怠情報.csv")
-    end
+   end
+    
+    
     
     def updatable_attributes
       ['name','email','password','password_confirmation','affiliation','uid','employee_number','basic_start', 'basic_finish']
