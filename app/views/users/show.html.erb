@@ -154,7 +154,7 @@
           <td></td>
           <td colspan="2"></td>
           <td colspan="6"></td>
-          <td><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+          <td><%= @total_working_times %></td>
           <td colspan="5"></td>
           <td>
             <% if @this_month_attendance.present? %>
