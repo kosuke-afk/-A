@@ -34,8 +34,8 @@ class UsersController < ApplicationController
   end
   
   def index
-    @users = User.where.not(admin: true)
-    @users = User.where.not(admin: true)
+    @users = User.where.not(admin: true).order(:id)
+    # @users = User.where.not(admin: true)
   end
   
   def edit
@@ -114,9 +114,8 @@ class UsersController < ApplicationController
   end
   
   def working_index
-    @attendances = Attendance.where(worked_on: Date.current)
     @working_index = User.joins(:attendances).where(attendances: {worked_on: Date.current,finished_at: nil})
-                                             .where.not(attendances: {started_at: nil})
+                                             .where.not(attendances: {started_at: nil}).order(:id)
   end
   
   def basic_info
