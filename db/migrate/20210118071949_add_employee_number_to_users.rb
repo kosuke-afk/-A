@@ -7,7 +7,7 @@ class AddEmployeeNumberToUsers < ActiveRecord::Migration[5.1]
   end
   
   def down
-    rename_column :users, :affliation, :department
+    rename_column :users, :affiliation, :department
     rename_column :users, :superior, :instructor_user
     change_column_default :users, :instructor_user, false
   end

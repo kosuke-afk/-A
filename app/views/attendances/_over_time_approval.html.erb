@@ -27,8 +27,8 @@
                          <td><%= l(day.worked_on, format: :short) %></td>
                          <td class="text-<%= wday_class(day) %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
                          <td class="table-text"><%= l(day.finish_time,format: :time) %></td>
-                         <td class="table-text"><%= l(User.find(id).basic_finish, format: :time) %></td>
-                         <td><%= working_over_time(day,day.finish_time,User.find(id).basic_finish) %></td>
+                         <td class="table-text"><%= l(User.find(id).designated_work_end_time, format: :time) %></td>
+                         <td><%= working_over_time(day,day.finish_time,User.find(id).designated_work_end_time) %></td>
                          <td><%= day.aim %></td>
                          <td><%= a.select :instructor_confirmation, $confirmation,{include: "選択してください"}, class: "form-control" %></td>
                          <td>

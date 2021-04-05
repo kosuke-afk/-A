@@ -40,21 +40,25 @@ class AttendancesController < ApplicationController
       n1 = 0
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        if (item[:attendance_instructor].present?) || (item[:started_at_temporary].present?) || (item[:finished_at_temporary].present?)
-          if (item[:attendance_instructor].blank?) || (item[:started_at_temporary].blank?) || (item[:finished_at_temporary].blank?)
-            flash[:info] = "出勤時間、退勤時間、申請先の上長を入力してください。"
-            redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
-          else
-            if (item[:finished_at_temporary] < item[:started_at_temporary])
-              if (item[:one_month_next] == "0")
-                flash[:info] = "出勤時間より早い退勤時間は無効です。"
-                redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+        if attendance.attendance_confirmation != "承認"
+          if (item[:attendance_instructor].present?) || (item[:started_at_temporary].present?) || (item[:finished_at_temporary].present?)
+            if (item[:attendance_instructor].blank?) || (item[:started_at_temporary].blank?) || (item[:finished_at_temporary].blank?)
+              flash[:info] = "出勤時間、退勤時間、申請先の上長を入力してください。"
+              redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+            else
+              if (item[:finished_at_temporary] < item[:started_at_temporary])
+                if (item[:one_month_next] == "0")
+                  flash[:info] = "出勤時間より早い退勤時間は無効です。"
+                  redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+                else
+                  item[:finished_at_temporary] = item[:finished_at_temporary].to_time + 1.day - 9.hour
+                end
               end
+              item[:one_month_next] = nil
+              attendance.update_attributes!(item)
+              attendance.update_attributes(attendance_confirmation: "申請中")
+              n1 += 1
             end
-            item[:one_month_next] = nil
-            attendance.update_attributes!(item)
-            attendance.update_attributes(attendance_confirmation: "申請中")
-            n1 += 1
           end
         end
       end
@@ -172,7 +176,7 @@ class AttendancesController < ApplicationController
               item[:started_at_temporary] = nil
               item[:finished_at_temporary] = nil
             end
-            @attendance.update_attributes!(item)
+            @attendance.update_attributes(item)
             # この中を改善
             if (@attendance.attendance_confirmation == "承認") && (@attendance.log.nil?)
               @attendance.create_log!(log_worked_on: @attendance.worked_on, before_started: @start, 

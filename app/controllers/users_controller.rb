@@ -129,11 +129,11 @@ class UsersController < ApplicationController
   private
   
     def params_user
-      params.require(:user).permit(:name, :email, :affiliation, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :affiliation, :password, :password_confirmation, :uid, :employee_number, :designated_work_start_time, :designated_work_end_time, :basic_work_time)
     end
     
     def basic_info_params
-      params.require(:user).permit(:basic_start,:basic_finish,:work_time)
+      params.require(:user).permit(:designated_work_start_time,:designated_work_end_time,:basic_work_time)
     end
     
     
@@ -172,7 +172,7 @@ class UsersController < ApplicationController
     
     
     def updatable_attributes
-      ['name','email','password','password_confirmation','affiliation','uid','employee_number','basic_start', 'basic_finish']
+      ['name','email','password', 'password_confirmation', 'affiliation','uid','employee_number','basic_work_time', 'designated_work_start_time', 'designated_work_end_time', 'superior', 'admin']
     end
   
   
