@@ -84,7 +84,6 @@ ActiveRecord::Schema.define(version: 20210405044420) do
     t.boolean "superior", default: false
     t.integer "employee_number"
     t.integer "uid"
-    t.string "ab"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["employee_number"], name: "index_users_on_employee_number", unique: true
     t.index ["uid"], name: "index_users_on_uid", unique: true
