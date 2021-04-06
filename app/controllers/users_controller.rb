@@ -49,7 +49,11 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params_user)
     if @user.save
-      log_in @user
+      if !current_user.present?
+        log_in(@user)
+      else
+        @user = current_user
+      end
       flash[:success] = "ユーザーを新規作成しました。"
       redirect_to @user
     else
